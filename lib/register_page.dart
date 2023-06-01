@@ -30,7 +30,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Nom',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
@@ -38,7 +38,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Prénom',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
@@ -46,7 +46,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Adresse e-mail',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
@@ -55,7 +55,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Mot de passe',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
@@ -74,10 +74,10 @@ class RegisterPage extends StatelessWidget {
                         horizontal: 24.0,
                         vertical: 12.0,
                       ),
+                      backgroundColor: Colors.orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      primary: Colors.orange, // Couleur du bouton
+                      ), // Couleur du bouton
                       elevation: 2.0, // Effet d'ombre
                     ),
                     child: const Text(
@@ -91,7 +91,7 @@ class RegisterPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context); // Retour à la page de connexion
                   },
-                  child: Text(
+                  child: const Text(
                     "Retour",
                   ),
                 ),

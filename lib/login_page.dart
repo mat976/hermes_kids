@@ -19,7 +19,7 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
+                const Text(
                   'Bienvenue',
                   style: TextStyle(
                     fontSize: 24.0,
@@ -34,7 +34,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 32.0),
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Username',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
@@ -42,7 +42,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
@@ -137,12 +137,12 @@ class LoginPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       SlideRoute(
-                        exitPage: LoginPage(),
-                        enterPage: RegisterPage(),
+                        exitPage: const LoginPage(),
+                        enterPage: const RegisterPage(),
                       ),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Si vous n'avez pas de compte, cliquez ici pour vous inscrire",
                     style: TextStyle(color: Colors.blue),
                   ),

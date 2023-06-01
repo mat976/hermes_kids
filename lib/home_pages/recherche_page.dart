@@ -5,7 +5,7 @@ class RecherchePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'Page de recherche',
         style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),

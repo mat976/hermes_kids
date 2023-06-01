@@ -7,7 +7,7 @@ class ParametresPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       children: [
         ElevatedButton(
           onPressed: () {
@@ -20,10 +20,10 @@ class ParametresPage extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            primary: Colors.grey[400],
+            backgroundColor: Colors.grey[400],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+          child: const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'Déconnexion',
               style: TextStyle(

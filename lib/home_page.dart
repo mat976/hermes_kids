@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'pages/accueil_page.dart';
-import 'pages/recherche_page.dart';
-import 'pages/favoris_page.dart';
-import 'pages/parametres_page.dart';
+import 'home_pages/accueil_page.dart';
+import 'home_pages/recherche_page.dart';
+import 'home_pages/favoris_page.dart';
+import 'home_pages/parametres_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -41,7 +41,8 @@ class _HomePageState extends State<HomePage> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
             child: GNav(
               selectedIndex: _selectedIndex,
               onTabChange: (index) {

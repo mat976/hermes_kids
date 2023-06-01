@@ -5,7 +5,7 @@ class AccueilPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text(
         'Page d\'accueil',
         style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
