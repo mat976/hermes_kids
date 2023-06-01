@@ -61,10 +61,10 @@ class LoginPage extends StatelessWidget {
                         horizontal: 24.0,
                         vertical: 16.0,
                       ),
+                      backgroundColor: Colors.orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      primary: Colors.orange, // Couleur du bouton
+                      ), // Couleur du bouton
                       elevation: 2.0, // Effet d'ombre
                     ),
                     child: const Text(
@@ -89,10 +89,10 @@ class LoginPage extends StatelessWidget {
                           horizontal: 24.0,
                           vertical: 12.0,
                         ),
+                        backgroundColor: Colors.red,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        primary: Colors.red, // Couleur du bouton Google
+                        ), // Couleur du bouton Google
                         elevation: 2.0, // Effet d'ombre
                       ),
                       icon: const Icon(
