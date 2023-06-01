@@ -7,7 +7,7 @@ class FavorisPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Page de recherche',
+        'Favoris',
         style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
       ),
     );

@@ -80,53 +80,60 @@ class LoginPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Logique pour se connecter avec Google
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24.0,
-                          vertical: 12.0,
-                        ),
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ), // Couleur du bouton Google
-                        elevation: 2.0, // Effet d'ombre
-                      ),
-                      icon: const Icon(
-                        Icons.g_translate,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Connexion Google',
-                        style: TextStyle(fontSize: 18.0),
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Logique pour se connecter avec Facebook
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24.0,
-                          vertical: 12.0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        primary: Colors.blue, // Couleur du bouton Facebook
-                        elevation: 2.0, // Effet d'ombre
-                      ),
-                      icon: const Icon(
-                        Icons.facebook,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Connexion Facebook',
-                        style: TextStyle(fontSize: 18.0),
+                    Flexible(
+                      child: Column(
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Logique pour se connecter avec Google
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0,
+                                vertical: 12.0,
+                              ),
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ), // Couleur du bouton Google
+                              elevation: 2.0, // Effet d'ombre
+                            ),
+                            icon: const Icon(
+                              Icons.g_translate,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Connexion Google',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Logique pour se connecter avec Facebook
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0,
+                                vertical: 12.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              primary:
+                                  Colors.blue, // Couleur du bouton Facebook
+                              elevation: 2.0, // Effet d'ombre
+                            ),
+                            icon: const Icon(
+                              Icons.facebook,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Connexion Facebook',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
