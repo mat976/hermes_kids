@@ -1,16 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key});
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
+    void registerUser() async {
+      try {
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        // L'utilisateur est inscrit avec succès, vous pouvez rediriger vers une autre page
+        print('Inscription réussie : ${userCredential.user?.email}');
+      } catch (e) {
+        // Une erreur s'est produite lors de l'inscription
+        print('Erreur d\'inscription : $e');
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Inscription'),
-        backgroundColor: Colors
-            .transparent, // Supprime la couleur de fond de la barre d'appBar
-        elevation: 0, // Supprime l'ombre de la barre d'appBar
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -30,22 +48,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Nom',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Prénom',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
+                  controller: emailController,
                   decoration: const InputDecoration(
                     labelText: 'Adresse e-mail',
                     border: OutlineInputBorder(),
@@ -55,6 +58,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
+                  controller: passwordController,
                   decoration: const InputDecoration(
                     labelText: 'Mot de passe',
                     border: OutlineInputBorder(),
@@ -66,9 +70,7 @@ class RegisterPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Logique pour le bouton d'inscription
-                    },
+                    onPressed: registerUser,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24.0,
@@ -77,8 +79,8 @@ class RegisterPage extends StatelessWidget {
                       backgroundColor: Colors.orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                      ), // Couleur du bouton
-                      elevation: 2.0, // Effet d'ombre
+                      ),
+                      elevation: 2.0,
                     ),
                     child: const Text(
                       'Inscription',
@@ -89,11 +91,9 @@ class RegisterPage extends StatelessWidget {
                 const SizedBox(height: 8.0),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // Retour à la page de connexion
+                    Navigator.pop(context);
                   },
-                  child: const Text(
-                    "Retour",
-                  ),
+                  child: const Text("Retour"),
                 ),
               ],
             ),
