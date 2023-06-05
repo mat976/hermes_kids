@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'home_pages/accueil_page.dart';
 import 'home_pages/recherche_page.dart';
 import 'home_pages/favoris_page.dart';
@@ -30,98 +30,23 @@ class _HomePageState extends State<HomePage> {
         index: _selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          final bool isSmallScreen = width < 360;
-          final bool showText = width >= 480;
-          final double fontSize = isSmallScreen ? 12.0 : 14.0;
-
-          return Material(
-            elevation: isSmallScreen ? 4.0 : 0.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-              ),
-              child: SafeArea(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildNavItem(
-                      Icons.home,
-                      'Accueil',
-                      isSmallScreen,
-                      showText,
-                      fontSize,
-                      0,
-                    ),
-                    _buildNavItem(
-                      Icons.search,
-                      'Recherche',
-                      isSmallScreen,
-                      showText,
-                      fontSize,
-                      1,
-                    ),
-                    _buildNavItem(
-                      Icons.favorite,
-                      'Favoris',
-                      isSmallScreen,
-                      showText,
-                      fontSize,
-                      2,
-                    ),
-                    _buildNavItem(
-                      Icons.settings,
-                      'Paramètres',
-                      isSmallScreen,
-                      showText,
-                      fontSize,
-                      3,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Colors.white,
+        color: Color.fromARGB(255, 247, 176, 24),
+        height: 50,
+        animationDuration: Duration(milliseconds: 200),
+        index: _selectedIndex,
+        items: [
+          Icon(Icons.home, size: 30),
+          Icon(Icons.search, size: 30),
+          Icon(Icons.favorite, size: 30),
+          Icon(Icons.settings, size: 30),
+        ],
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
         },
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-    IconData icon,
-    String label,
-    bool isSmallScreen,
-    bool showText,
-    double fontSize,
-    int index,
-  ) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: isSmallScreen ? 24.0 : 28.0,
-            ),
-            if (showText && !isSmallScreen)
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  label,
-                  style: TextStyle(fontSize: fontSize),
-                ),
-              ),
-          ],
-        ),
       ),
     );
   }
