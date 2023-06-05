@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>709056935190-gssmlngsvn470r1o80vm9gkprj204omn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.709056935190-gssmlngsvn470r1o80vm9gkprj204omn</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCJ_5YxdTebV_h18GqSTm0zs9cDa-OKfM4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>709056935190</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.hermesKids.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>hermes-kids</string>
+	<key>STORAGE_BUCKET</key>
+	<string>hermes-kids.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:709056935190:ios:9e0433d25e969d01844c37</string>
+</dict>
+</plist>
