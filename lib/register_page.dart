@@ -9,10 +9,20 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
 
     Future<void> registerUser(BuildContext context) async {
       String email = emailController.text.trim();
       String password = passwordController.text.trim();
+      String confirmPassword = confirmPasswordController.text.trim();
+
+      if (password != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Les mots de passe ne correspondent pas')),
+        );
+        return;
+      }
 
       try {
         UserCredential userCredential =
@@ -62,14 +72,11 @@ class RegisterPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inscription'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
+      appBar: null,
+      body: Container(
+        color: Color(0xFFE9E7DB), // Couleur de fond
+        child: Center(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -98,6 +105,16 @@ class RegisterPage extends StatelessWidget {
                   controller: passwordController,
                   decoration: const InputDecoration(
                     labelText: 'Mot de passe',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.lock),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirmez le mot de passe',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),

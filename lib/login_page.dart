@@ -63,14 +63,18 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Padding(
+      appBar: null,
+      body: Container(
+        color: Color(0xFFE9E7DB), // Couleur de fond
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Image.asset(
+              '../assets/logo_ephemeride_512.jpg',
+              height: 180.0, // Hauteur agrandie du logo
+            ),
+            const SizedBox(height: 32.0),
             const Text(
               'Bienvenue',
               style: TextStyle(
@@ -78,11 +82,6 @@ class _LoginPageState extends State<LoginPage> {
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32.0),
-            Image.asset(
-              'assets/hermes_kids_logo.png',
-              height: 120.0,
             ),
             const SizedBox(height: 32.0),
             TextFormField(

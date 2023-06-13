@@ -7,9 +7,7 @@ class AccueilPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Accueil'),
-      ),
+      appBar: null,
       body: CarouselSlider(
         options: CarouselOptions(
           scrollDirection: Axis.vertical,
