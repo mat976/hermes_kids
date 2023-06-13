@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'register_page.dart';
 
@@ -12,12 +13,14 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  late SharedPreferences _prefs;
 
   Future<void> _loginWithEmail(
       BuildContext context, String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      Navigator.pushReplacementNamed(context, '/home');
+      await _prefs.setBool('isLoggedIn', true);
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
     } catch (e) {
       print('Erreur de connexion : $e');
       // Afficher un message d'erreur à l'utilisateur
@@ -36,7 +39,8 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       await _auth.signInWithCredential(credential);
-      Navigator.pushReplacementNamed(context, '/home');
+      await _prefs.setBool('isLoggedIn', true);
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
     } catch (e) {
       print('Erreur de connexion avec Google : $e');
       // Afficher un message d'erreur à l'utilisateur
@@ -45,6 +49,16 @@ class _LoginPageState extends State<LoginPage> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeSharedPreferences();
+  }
+
+  Future<void> initializeSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
 
   @override
   Widget build(BuildContext context) {

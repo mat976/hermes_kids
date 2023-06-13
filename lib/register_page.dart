@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -9,18 +10,54 @@ class RegisterPage extends StatelessWidget {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
 
-    void registerUser() async {
+    Future<void> registerUser(BuildContext context) async {
+      String email = emailController.text.trim();
+      String password = passwordController.text.trim();
+
       try {
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
+          email: email,
+          password: password,
         );
-        // L'utilisateur est inscrit avec succès, vous pouvez rediriger vers une autre page
-        print('Inscription réussie : ${userCredential.user?.email}');
+
+        // Créer le document "user" avec l'UID de l'utilisateur
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'email': email,
+          'admin': false, // Par défaut, l'utilisateur n'est pas un admin
+        });
+
+        // Afficher un message de réussite d'inscription
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Inscription réussie')),
+        );
+
+        // Rediriger vers la page de connexion
+        Navigator.pushReplacementNamed(context, '/login');
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Le mot de passe est trop faible.')),
+          );
+        } else if (e.code == 'email-already-in-use') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Cet e-mail est déjà utilisé par un autre compte.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erreur d\'inscription : ${e.message}')),
+          );
+        }
       } catch (e) {
         // Une erreur s'est produite lors de l'inscription
-        print('Erreur d\'inscription : $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur d\'inscription')),
+        );
       }
     }
 
@@ -70,7 +107,7 @@ class RegisterPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: registerUser,
+                    onPressed: () => registerUser(context),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24.0,

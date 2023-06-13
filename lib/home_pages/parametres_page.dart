@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../login_page.dart';
 import '../test_page.dart';
 
 class ParametresPage extends StatelessWidget {
   const ParametresPage({Key? key}) : super(key: key);
+
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +22,7 @@ class ParametresPage extends StatelessWidget {
       children: [
         ElevatedButton(
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
-            );
+            _logout(context);
           },
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
