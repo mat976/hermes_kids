@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.white,
-        color: Color.fromARGB(255, 247, 176, 24),
+        color: Color(0xFFFEB30A), // Couleur de la barre de navigation
         height: 50,
         animationDuration: Duration(milliseconds: 200),
         index: _selectedIndex,

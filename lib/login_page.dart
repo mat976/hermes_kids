@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -103,21 +104,48 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: true,
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                String email = emailController.text.trim();
-                String password = passwordController.text.trim();
-                _loginWithEmail(context, email, password);
-              },
-              child: const Text('Login'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  String email = emailController.text.trim();
+                  String password = passwordController.text.trim();
+                  _loginWithEmail(context, email, password);
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xFFFEB30A), // Couleur du bouton
+                  padding: EdgeInsets.symmetric(
+                      vertical: 16.0), // Espacement vertical du bouton
+                ),
+                child: const Text('Login'),
+              ),
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton.icon(
+            ElevatedButton(
               onPressed: () {
-                _loginWithGoogle(context);
+                // Action du bouton Google
               },
-              icon: const Icon(Icons.g_translate),
-              label: const Text('Connexion Google'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white, // Couleur du bouton
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    '../assets/Google__G__Logo.svg',
+                    height: 24.0, // Hauteur de l'image
+                  ),
+                  const SizedBox(
+                      width: 12.0), // Espacement entre l'icône et le texte
+                  const Text(
+                    'Connexion Google',
+                    style: TextStyle(
+                      color: Colors.black, // Couleur du texte
+                      fontSize: 16.0, // Taille du texte
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16.0),
             TextButton(
@@ -130,7 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
               child: const Text(
-                  "Si vous n'avez pas de compte, cliquez ici pour vous inscrire"),
+                "Si vous n'avez pas de compte, cliquez ici pour vous inscrire",
+              ),
             ),
           ],
         ),

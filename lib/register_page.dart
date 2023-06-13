@@ -74,7 +74,7 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
       appBar: null,
       body: Container(
-        color: Color(0xFFE9E7DB), // Couleur de fond
+        color: const Color(0xFFE9E7DB), // Couleur de fond
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),

@@ -6,26 +6,29 @@ class AccueilPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: null,
-      body: CarouselSlider(
-        options: CarouselOptions(
-          scrollDirection: Axis.vertical,
-          height: double.infinity,
-          viewportFraction: 1.0,
+    return Container(
+      color: const Color(0xFFE9E7DB), // Couleur de fond
+      child: Scaffold(
+        appBar: null,
+        body: CarouselSlider(
+          options: CarouselOptions(
+            scrollDirection: Axis.vertical,
+            height: double.infinity,
+            viewportFraction: 1.0,
+          ),
+          items: [
+            MenuCard(
+              image: AssetImage('assets/image1.jpg'),
+              title: 'Titre de la page 1',
+              quote: 'Citation inspirante 1',
+            ),
+            MenuCard(
+              image: AssetImage('assets/image2.jpg'),
+              title: 'Titre de la page 2',
+              quote: 'Citation inspirante 2',
+            ),
+          ],
         ),
-        items: [
-          MenuCard(
-            image: AssetImage('assets/image1.jpg'),
-            title: 'Titre de la page 1',
-            quote: 'Citation inspirante 1',
-          ),
-          MenuCard(
-            image: AssetImage('assets/image2.jpg'),
-            title: 'Titre de la page 2',
-            quote: 'Citation inspirante 2',
-          ),
-        ],
       ),
     );
   }
