@@ -7,6 +7,7 @@ import 'home_pages/accueil_page.dart';
 import 'home_pages/recherche_page.dart';
 import 'home_pages/favoris_page.dart';
 import 'home_pages/parametres_page.dart';
+import 'home_pages/post_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -45,8 +46,7 @@ class _HomePageState extends State<HomePage> {
           .doc(currentUser.uid)
           .get();
       if (snapshot.exists) {
-        final data = snapshot.data() as Map<String,
-            dynamic>?; // Conversion du type de données en Map<String, dynamic>
+        final data = snapshot.data() as Map<String, dynamic>?;
         if (data != null) {
           setState(() {
             isAdmin = data['admin'] ?? false;
@@ -64,9 +64,23 @@ class _HomePageState extends State<HomePage> {
         index: _selectedIndex,
         children: _pages,
       ),
+      floatingActionButton: isAdmin
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PostPage(),
+                  ),
+                );
+              },
+              backgroundColor: Color(0xFFFEB30A),
+              child: Icon(Icons.add),
+            )
+          : null,
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.white,
-        color: Color(0xFFFEB30A), // Couleur de la barre de navigation
+        color: Color(0xFFFEB30A),
         height: 50,
         animationDuration: Duration(milliseconds: 200),
         index: _selectedIndex,
@@ -74,7 +88,6 @@ class _HomePageState extends State<HomePage> {
           Icon(Icons.home, size: 30),
           Icon(Icons.search, size: 30),
           Icon(Icons.favorite, size: 30),
-          if (isAdmin) Icon(Icons.add, size: 30),
           Icon(Icons.settings, size: 30),
         ],
         onTap: (index) {

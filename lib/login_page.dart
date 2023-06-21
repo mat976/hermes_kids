@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              '../assets/logo_ephemeride_512.jpg',
+              'assets/logo_ephemeride_512.jpg',
               height: 180.0, // Hauteur agrandie du logo
             ),
             const SizedBox(height: 32.0),
