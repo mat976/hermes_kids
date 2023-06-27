@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AccueilPage extends StatelessWidget {
   const AccueilPage({Key? key}) : super(key: key);
@@ -10,24 +11,39 @@ class AccueilPage extends StatelessWidget {
       color: const Color(0xFFE9E7DB), // Couleur de fond
       child: Scaffold(
         appBar: null,
-        body: CarouselSlider(
-          options: CarouselOptions(
-            scrollDirection: Axis.vertical,
-            height: double.infinity,
-            viewportFraction: 1.0,
-          ),
-          items: [
-            MenuCard(
-              image: AssetImage('assets/image1.jpg'),
-              title: 'Titre de la page 1',
-              quote: 'Citation inspirante 1',
-            ),
-            MenuCard(
-              image: AssetImage('assets/image2.jpg'),
-              title: 'Titre de la page 2',
-              quote: 'Citation inspirante 2',
-            ),
-          ],
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Center(child: Text('Une erreur s\'est produite'));
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            final List<QueryDocumentSnapshot> posts = snapshot.data!.docs;
+
+            return CarouselSlider(
+              options: CarouselOptions(
+                scrollDirection: Axis.vertical,
+                height: double.infinity,
+                viewportFraction: 1.0,
+              ),
+              items: posts.map((post) {
+                final String title = post['title'] ?? '';
+                final String description = post['description'] ?? '';
+                final String imageUrl = post['imageUrl'] ?? '';
+
+                return MenuCard(
+                  image: NetworkImage(imageUrl),
+                  title: title,
+                  description: description,
+                );
+              }).toList(),
+            );
+          },
         ),
       ),
     );
@@ -37,12 +53,12 @@ class AccueilPage extends StatelessWidget {
 class MenuCard extends StatelessWidget {
   final ImageProvider<Object> image;
   final String title;
-  final String quote;
+  final String description;
 
   const MenuCard({
     required this.image,
     required this.title,
-    required this.quote,
+    required this.description,
   });
 
   @override
@@ -67,7 +83,7 @@ class MenuCard extends StatelessWidget {
           ),
           SizedBox(height: 16.0),
           Text(
-            quote,
+            description,
             style: TextStyle(
               fontSize: 16.0,
               color: Colors.white,

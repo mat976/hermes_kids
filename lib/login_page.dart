@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       await _prefs.setBool('isLoggedIn', true);
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       print('Erreur de connexion : $e');
       // Afficher un message d'erreur à l'utilisateur
@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
 
       await _auth.signInWithCredential(credential);
       await _prefs.setBool('isLoggedIn', true);
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       print('Erreur de connexion avec Google : $e');
       // Afficher un message d'erreur à l'utilisateur
@@ -123,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                // Action du bouton Google
+                _loginWithGoogle(context);
               },
               style: ElevatedButton.styleFrom(
                 primary: Colors.white, // Couleur du bouton
@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SvgPicture.asset(
-                    '../assets/Google__G__Logo.svg',
+                    'assets/Google__G__Logo.svg',
                     height: 24.0, // Hauteur de l'image
                   ),
                   const SizedBox(
