@@ -16,11 +16,11 @@ class AccueilPage extends StatelessWidget {
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
-              return Center(child: Text('Une erreur s\'est produite'));
+              return const Center(child: Text('Une erreur s\'est produite'));
             }
 
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             final List<QueryDocumentSnapshot> posts = snapshot.data!.docs;
@@ -35,7 +35,6 @@ class AccueilPage extends StatelessWidget {
                 final String title = post['title'] ?? '';
                 final String description = post['description'] ?? '';
                 final String imageUrl = post['imageUrl'] ?? '';
-
                 return MenuCard(
                   image: NetworkImage(imageUrl),
                   title: title,
@@ -70,23 +69,46 @@ class MenuCard extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Positioned.fill(
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.6),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
             ),
           ),
-          SizedBox(height: 16.0),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.white,
+          Positioned(
+            left: 16.0,
+            bottom: 16.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
