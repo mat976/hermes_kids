@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'register_page.dart';
@@ -39,9 +40,29 @@ class _LoginPageState extends State<LoginPage> {
         idToken: googleAuth?.idToken,
       );
 
-      await _auth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
       await _prefs.setBool('isLoggedIn', true);
       Navigator.pushReplacementNamed(context, '/home');
+
+      // Vérifier si le fichier utilisateur existe déjà dans Firestore
+      final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user?.uid)
+          .get();
+
+      if (!userSnapshot.exists) {
+        // Créer le fichier utilisateur dans Firestore avec les informations spécifiées
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user?.uid)
+            .set({
+          'admin': false,
+          'email': user?.email,
+        });
+      }
     } catch (e) {
       print('Erreur de connexion avec Google : $e');
       // Afficher un message d'erreur à l'utilisateur
@@ -66,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: null,
       body: Container(
-        color: Color(0xFFE9E7DB), // Couleur de fond
+        color: const Color(0xFFE9E7DB), // Couleur de fond
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
