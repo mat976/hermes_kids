@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,7 +7,7 @@ import 'home_pages/accueil_page.dart';
 import 'home_pages/recherche_page.dart';
 import 'home_pages/favoris_page.dart';
 import 'home_pages/parametres_page.dart';
-import 'home_pages/post_page.dart';
+import 'admin_page/post_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -64,37 +64,39 @@ class _HomePageState extends State<HomePage> {
         index: _selectedIndex,
         children: _pages,
       ),
-      floatingActionButton: isAdmin
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PostPage(),
-                  ),
-                );
-              },
-              backgroundColor: Color(0xFFFEB30A),
-              child: Icon(Icons.add),
-            )
-          : null,
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.white,
-        color: Color(0xFFFEB30A),
-        height: 50,
-        animationDuration: Duration(milliseconds: 200),
-        index: _selectedIndex,
-        items: [
-          Icon(Icons.home, size: 30),
-          Icon(Icons.search, size: 30),
-          Icon(Icons.favorite, size: 30),
-          Icon(Icons.settings, size: 30),
-        ],
+      bottomNavigationBar: DotNavigationBar(
+        currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
           });
         },
+        dotIndicatorColor: Colors.white,
+        items: [
+          DotNavigationBarItem(
+            icon: Icon(Icons.home),
+            selectedColor: Color(0xFFFEB30A),
+          ),
+          DotNavigationBarItem(
+            icon: Icon(Icons.search),
+            selectedColor: Color(0xFFFEB30A),
+          ),
+          DotNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            selectedColor: Color(0xFFFEB30A),
+          ),
+          if (isAdmin)
+            DotNavigationBarItem(
+              icon: Icon(Icons.settings),
+              selectedColor: Color(0xFFFEB30A),
+            )
+          else
+            DotNavigationBarItem(
+              icon: Icon(Icons.settings),
+              selectedColor: Color(0xFFFEB30A),
+              unselectedColor: Colors.grey,
+            ),
+        ],
       ),
     );
   }

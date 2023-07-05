@@ -36,7 +36,7 @@ class AccueilPage extends StatelessWidget {
                 final String description = post['description'] ?? '';
                 final String imageUrl = post['imageUrl'] ?? '';
                 return MenuCard(
-                  image: NetworkImage(imageUrl),
+                  imageUrl: imageUrl,
                   title: title,
                   description: description,
                 );
@@ -50,69 +50,70 @@ class AccueilPage extends StatelessWidget {
 }
 
 class MenuCard extends StatelessWidget {
-  final ImageProvider<Object> image;
+  final String imageUrl;
   final String title;
   final String description;
 
   const MenuCard({
-    required this.image,
+    required this.imageUrl,
     required this.title,
     required this.description,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: image,
+    return Stack(
+      children: [
+        Image.network(
+          imageUrl,
           fit: BoxFit.cover,
+          height: double.infinity,
+          width: double.infinity,
         ),
-      ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.6),
-                    Colors.transparent,
-                  ],
-                ),
+        Positioned.fill(
+          bottom: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.transparent,
+                ],
               ),
             ),
           ),
-          Positioned(
-            left: 16.0,
-            bottom: 16.0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+        ),
+        Positioned(
+          left: 16.0,
+          bottom: 16.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-                const SizedBox(height: 8.0),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white,
-                  ),
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
