@@ -39,22 +39,41 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double paddingTop = 16.0 + MediaQuery.of(context).padding.top;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profil'),
-      ),
       body: Stack(
+        alignment: Alignment
+            .topCenter, // Ajuste l'alignement des éléments vers le haut
         children: [
-          // Bannière en arrière-plan
-          Image.asset(
-            'assets/banner_image.jpg', // Remplacez par le chemin de votre bannière d'arrière-plan
-            fit: BoxFit.cover,
-            height: MediaQuery.of(context).size.height *
-                0.3, // Hauteur de la bannière (30% de la hauteur de l'écran)
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/banner_image.jpg'), // Remplacez par le chemin de votre bannière d'arrière-plan
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 16.0, top: paddingTop),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(
+                      context); // Retour en arrière lorsque le bouton est cliqué
+                },
+              ),
+            ),
           ),
           Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 16.0),
+              const SizedBox(
+                  height: 100.0), // Ajuste l'espace au-dessus de la bannière
               CircleAvatar(
                 radius: 50.0,
                 backgroundImage: AssetImage(profileImage),
@@ -70,13 +89,6 @@ class _UserPageState extends State<UserPage> {
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Ajoutez ici les actions pour changer l'image de profil
-                },
-                child: const Text('Changer l\'image de profil'),
               ),
             ],
           ),
