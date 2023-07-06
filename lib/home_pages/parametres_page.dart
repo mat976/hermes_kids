@@ -3,8 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../admin_page/post_page.dart'; // Importez la page PostPage
-import '../settings/user_page.dart'; // Importez la page UserProfilePage
+import '../admin_page/post_page.dart';
+import '../settings/user_page.dart';
+import '../settings/CGU_page.dart'; // Importez la page CGUPage
 
 class ParametresPage extends StatefulWidget {
   const ParametresPage({Key? key}) : super(key: key);
@@ -67,6 +68,15 @@ class _ParametresPageState extends State<ParametresPage> {
     );
   }
 
+  void navigateToCGUPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CGUPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -74,7 +84,7 @@ class _ParametresPageState extends State<ParametresPage> {
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          if (isAdmin) // Afficher le bouton uniquement si l'utilisateur est un admin
+          if (isAdmin)
             ElevatedButton(
               onPressed: () {
                 navigateToPostPage(context);
@@ -83,16 +93,16 @@ class _ParametresPageState extends State<ParametresPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                primary: Colors.grey[300], // Couleur de fond du bouton
-                onPrimary: Colors.black, // Couleur du texte du bouton
-                elevation: 0, // Supprime l'ombre du bouton
+                primary: Colors.grey[300],
+                onPrimary: Colors.black,
+                elevation: 0,
                 padding: const EdgeInsets.all(16.0),
                 visualDensity: VisualDensity.compact,
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.settings), // Icône de paramètres
+                  Icon(Icons.settings),
                   SizedBox(width: 16.0),
                   Text(
                     'Paramètres admin',
@@ -104,7 +114,7 @@ class _ParametresPageState extends State<ParametresPage> {
                 ],
               ),
             ),
-          const SizedBox(height: 16.0), // Ajout de l'espace entre les boutons
+          const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {
               navigateToUserProfilePage(context);
@@ -113,16 +123,16 @@ class _ParametresPageState extends State<ParametresPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              primary: Colors.grey[300], // Couleur de fond du bouton
-              onPrimary: Colors.black, // Couleur du texte du bouton
-              elevation: 0, // Supprime l'ombre du bouton
+              primary: Colors.grey[300],
+              onPrimary: Colors.black,
+              elevation: 0,
               padding: const EdgeInsets.all(16.0),
               visualDensity: VisualDensity.compact,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.person), // Icône de profil
+                Icon(Icons.person),
                 SizedBox(width: 16.0),
                 Text(
                   'Mon profil',
@@ -134,7 +144,7 @@ class _ParametresPageState extends State<ParametresPage> {
               ],
             ),
           ),
-          const SizedBox(height: 16.0), // Ajout de l'espace entre les boutons
+          const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {
               _logout(context);
@@ -143,19 +153,49 @@ class _ParametresPageState extends State<ParametresPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              primary: Colors.grey[300], // Couleur de fond du bouton
-              onPrimary: Colors.black, // Couleur du texte du bouton
-              elevation: 0, // Supprime l'ombre du bouton
+              primary: Colors.grey[300],
+              onPrimary: Colors.black,
+              elevation: 0,
               padding: const EdgeInsets.all(16.0),
               visualDensity: VisualDensity.compact,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.exit_to_app), // Icône de déconnexion
+                Icon(Icons.exit_to_app),
                 SizedBox(width: 16.0),
                 Text(
                   'Déconnexion',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16.0),
+          ElevatedButton(
+            onPressed: () {
+              navigateToCGUPage(context);
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              primary: Colors.grey[300],
+              onPrimary: Colors.black,
+              elevation: 0,
+              padding: const EdgeInsets.all(16.0),
+              visualDensity: VisualDensity.compact,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(Icons.description),
+                SizedBox(width: 16.0),
+                Text(
+                  'CGU',
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
