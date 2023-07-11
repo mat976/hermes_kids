@@ -4,7 +4,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'edit_post_page.dart';
 import 'view_posts_page.dart';
 
 class PostPage extends StatefulWidget {
@@ -100,80 +99,106 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Poster une nouvelle publication'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Titre',
-                    border: OutlineInputBorder(),
+      body: Center(
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Titre',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 5,
                   ),
-                  maxLines: 5,
-                ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: isImageSelected
-                      ? null
-                      : () async {
-                          await pickImage();
-                        },
-                  child: const Text('Sélectionner une image'),
-                ),
-                if (isImageSelected)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 16.0),
-                      const Text(
-                        'Image sélectionnée :',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: isImageSelected
+                        ? null
+                        : () async {
+                            await pickImage();
+                          },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.all(16.0),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    child: const Text('Sélectionner une image'),
+                  ),
+                  if (isImageSelected)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16.0),
+                        const Text(
+                          'Image sélectionnée :',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8.0),
-                      SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: Image.file(imageFile!),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Text(
-                        imageName!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(height: 8.0),
+                        SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: Image.file(imageFile!),
                         ),
+                        const SizedBox(height: 16.0),
+                        Text(
+                          imageName!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await uploadImage();
+                      await submitPost();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                    ],
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.all(16.0),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    child: const Text('Poster'),
                   ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    await uploadImage();
-                    await submitPost();
-                  },
-                  child: const Text('Poster'),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          ViewPostsPage(),
-        ],
+            ViewPostsPage(),
+          ],
+        ),
       ),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.white,

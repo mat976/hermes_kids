@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'post_detail_page.dart';
 
 class AccueilPage extends StatelessWidget {
   const AccueilPage({Key? key}) : super(key: key);
@@ -32,10 +33,24 @@ class AccueilPage extends StatelessWidget {
               final String title = post['title'] ?? '';
               final String description = post['description'] ?? '';
               final String imageUrl = post['imageUrl'] ?? '';
-              return MenuCard(
-                imageUrl: imageUrl,
-                title: title,
-                description: description,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PostDetailPage(
+                        imageUrl: imageUrl,
+                        title: title,
+                        description: description,
+                      ),
+                    ),
+                  );
+                },
+                child: MenuCard(
+                  imageUrl: imageUrl,
+                  title: title,
+                  description: description,
+                ),
               );
             }).toList(),
           );

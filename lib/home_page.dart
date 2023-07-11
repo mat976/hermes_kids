@@ -37,10 +37,9 @@ class _HomePageState extends State<HomePage> {
             index: _selectedIndex,
             children: _pages,
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
+          Align(
+            alignment: Alignment
+                .bottomCenter, // Aligner la barre de navigation au centre
             child: DotNavigationBar(
               currentIndex: _selectedIndex,
               onTap: (index) {
@@ -49,6 +48,7 @@ class _HomePageState extends State<HomePage> {
                 });
               },
               dotIndicatorColor: Colors.white,
+              curve: Curves.easeInOut,
               items: [
                 DotNavigationBarItem(
                   icon: const Icon(Icons.home),
