@@ -39,16 +39,16 @@ dependencies:
   cloud_firestore: ^4.8.1
 
   flutter_svg: ^2.0.7
-  curved_navigation_bar: ^1.0.3
   carousel_slider: ^4.2.1
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.1.2
   firebase_storage: ^11.2.3
   image_picker: ^0.8.9
   cached_network_image: ^3.2.3
-  dot_navigation_bar: ^1.0.2
   flutter_speed_dial: ^7.0.0
   water_drop_nav_bar: ^2.2.0+5
+  html_editor_enhanced: ^2.5.1
+  flutter_quill: ^7.2.11
   
 
   

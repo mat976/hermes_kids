@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'view_posts_page.dart';
+import 'richtextedit.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -15,10 +16,7 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   int _selectedIndex = 0;
   final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
   List<dynamic> contentList = [];
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
 
   Future<void> pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -39,17 +37,10 @@ class _PostPageState extends State<PostPage> {
 
     for (var content in contentList) {
       if (content is File) {
-        // Récupérer le titre du post
         final String title = titleController.text.trim();
-
-        // Créer une référence personnalisée pour le fichier dans Firebase Storage
         final Reference storageRef =
             FirebaseStorage.instance.ref().child('images/$title.jpg');
-
-        // Enregistrer l'image dans Firebase Storage avec la référence personnalisée
         final TaskSnapshot uploadTask = await storageRef.putFile(content);
-
-        // Récupérer l'URL de l'image
         final imageUrl = await uploadTask.ref.getDownloadURL();
         setState(() {
           contentList[contentList.indexOf(content)] = imageUrl;
@@ -59,38 +50,21 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> submitPost() async {
-    // Récupérer les valeurs du titre et de la description
     final String title = titleController.text.trim();
-    final String description = descriptionController.text.trim();
 
-    // Vérifier si le titre, la description et le contenu sont valides
-    if (title.isEmpty || description.isEmpty || contentList.isEmpty) {
-      // Afficher un message d'erreur à l'utilisateur
+    if (title.isEmpty || contentList.isEmpty) {
       return;
     }
 
-    // Enregistrer les données dans Firestore
     final CollectionReference postsRef =
         FirebaseFirestore.instance.collection('posts');
     await postsRef.add({
       'title': title,
-      'description': description,
       'contentList': contentList,
-      'date': selectedDate,
-      'time': selectedTime,
     });
 
-    // Afficher un message de succès à l'utilisateur
-    // ...
-
-    // Effacer les champs de texte et la liste de contenu
     titleController.clear();
-    descriptionController.clear();
     contentList.clear();
-    setState(() {
-      selectedDate = null;
-      selectedTime = null;
-    });
   }
 
   void _onTabSelected(int index) {
@@ -251,26 +225,16 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
-  Future<void> _selectDateTime() async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+  void _openParagraphEditor() async {
+    final paragraph = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ParagraphEditorPage()),
     );
 
-    if (pickedDate != null) {
-      final TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (pickedTime != null) {
-        setState(() {
-          selectedDate = pickedDate;
-          selectedTime = pickedTime;
-        });
-      }
+    if (paragraph != null) {
+      setState(() {
+        contentList.add(paragraph);
+      });
     }
   }
 
@@ -295,14 +259,6 @@ class _PostPageState extends State<PostPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: _selectDateTime,
-                    icon: Icon(Icons.calendar_today),
-                    label: Text(selectedDate != null && selectedTime != null
-                        ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} ${selectedTime!.hour}:${selectedTime!.minute}'
-                        : 'Sélectionner la date et l\'heure'),
-                  ),
-                  const SizedBox(height: 16.0),
                   TextFormField(
                     controller: titleController,
                     decoration: const InputDecoration(
@@ -311,17 +267,8 @@ class _PostPageState extends State<PostPage> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  TextFormField(
-                    controller: descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Description',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLines: 5,
-                  ),
-                  const SizedBox(height: 16.0),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton.icon(
                         onPressed: () async {
@@ -330,42 +277,8 @@ class _PostPageState extends State<PostPage> {
                         icon: Icon(Icons.image),
                         label: Text('Image'),
                       ),
-                      const SizedBox(width: 16.0),
                       ElevatedButton.icon(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Ajouter un paragraphe'),
-                                content: TextFormField(
-                                  controller: descriptionController,
-                                  maxLines: 5,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Texte',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      final String paragraph =
-                                          descriptionController.text.trim();
-                                      if (paragraph.isNotEmpty) {
-                                        Navigator.of(context).pop();
-                                        setState(() {
-                                          contentList.add(paragraph);
-                                        });
-                                        descriptionController.clear();
-                                      }
-                                    },
-                                    child: const Text('Ajouter'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
+                        onPressed: _openParagraphEditor,
                         icon: Icon(Icons.format_align_left),
                         label: Text('Paragraphe'),
                       ),
