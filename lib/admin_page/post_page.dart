@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'view_posts_page.dart';
 
 class PostPage extends StatefulWidget {
@@ -17,10 +16,9 @@ class _PostPageState extends State<PostPage> {
   int _selectedIndex = 0;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  File? imageFile;
-  String imageUrl = '';
-  String? imageName;
-  bool isImageSelected = false;
+  List<dynamic> contentList = [];
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
 
   Future<void> pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -29,30 +27,35 @@ class _PostPageState extends State<PostPage> {
 
     if (pickedFile != null) {
       setState(() {
-        imageFile = File(pickedFile.path);
-        imageName = pickedFile.name;
-        isImageSelected = true;
+        contentList.add(File(pickedFile.path));
       });
     }
   }
 
-  Future<void> uploadImage() async {
-    if (imageFile == null) {
+  Future<void> uploadImages() async {
+    if (contentList.isEmpty) {
       return;
     }
 
-    // Récupérer le titre du post
-    final String title = titleController.text.trim();
+    for (var content in contentList) {
+      if (content is File) {
+        // Récupérer le titre du post
+        final String title = titleController.text.trim();
 
-    // Créer une référence personnalisée pour le fichier dans Firebase Storage
-    final Reference storageRef =
-        FirebaseStorage.instance.ref().child('images/$title.jpg');
+        // Créer une référence personnalisée pour le fichier dans Firebase Storage
+        final Reference storageRef =
+            FirebaseStorage.instance.ref().child('images/$title.jpg');
 
-    // Enregistrer l'image dans Firebase Storage avec la référence personnalisée
-    final TaskSnapshot uploadTask = await storageRef.putFile(imageFile!);
+        // Enregistrer l'image dans Firebase Storage avec la référence personnalisée
+        final TaskSnapshot uploadTask = await storageRef.putFile(content);
 
-    // Récupérer l'URL de l'image
-    imageUrl = await uploadTask.ref.getDownloadURL();
+        // Récupérer l'URL de l'image
+        final imageUrl = await uploadTask.ref.getDownloadURL();
+        setState(() {
+          contentList[contentList.indexOf(content)] = imageUrl;
+        });
+      }
+    }
   }
 
   Future<void> submitPost() async {
@@ -60,8 +63,8 @@ class _PostPageState extends State<PostPage> {
     final String title = titleController.text.trim();
     final String description = descriptionController.text.trim();
 
-    // Vérifier si le titre, la description et l'URL de l'image sont valides
-    if (title.isEmpty || description.isEmpty || imageUrl.isEmpty) {
+    // Vérifier si le titre, la description et le contenu sont valides
+    if (title.isEmpty || description.isEmpty || contentList.isEmpty) {
       // Afficher un message d'erreur à l'utilisateur
       return;
     }
@@ -72,20 +75,21 @@ class _PostPageState extends State<PostPage> {
     await postsRef.add({
       'title': title,
       'description': description,
-      'imageUrl': imageUrl,
+      'contentList': contentList,
+      'date': selectedDate,
+      'time': selectedTime,
     });
 
     // Afficher un message de succès à l'utilisateur
     // ...
 
-    // Effacer les champs de texte et l'URL de l'image
+    // Effacer les champs de texte et la liste de contenu
     titleController.clear();
     descriptionController.clear();
-    imageUrl = '';
+    contentList.clear();
     setState(() {
-      imageFile = null;
-      imageName = null;
-      isImageSelected = false;
+      selectedDate = null;
+      selectedTime = null;
     });
   }
 
@@ -95,13 +99,190 @@ class _PostPageState extends State<PostPage> {
     });
   }
 
+  Widget _buildContentItem(dynamic content, int index) {
+    if (content is String) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 5.0,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Paragraphe ${index + 1}:',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(content),
+            const SizedBox(height: 8.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_upward),
+                  onPressed: index > 0
+                      ? () {
+                          setState(() {
+                            final contentItem = contentList[index];
+                            contentList.removeAt(index);
+                            contentList.insert(index - 1, contentItem);
+                          });
+                        }
+                      : null,
+                ),
+                IconButton(
+                  icon: Icon(Icons.arrow_downward),
+                  onPressed: index < contentList.length - 1
+                      ? () {
+                          setState(() {
+                            final contentItem = contentList[index];
+                            contentList.removeAt(index);
+                            contentList.insert(index + 1, contentItem);
+                          });
+                        }
+                      : null,
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    setState(() {
+                      contentList.removeAt(index);
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    } else if (content is File) {
+      return GestureDetector(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                child: Image.file(content),
+              );
+            },
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 5.0,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Image ${index + 1}:',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              Image.file(content, width: 100, height: 100),
+              const SizedBox(height: 8.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_upward),
+                    onPressed: index > 0
+                        ? () {
+                            setState(() {
+                              final contentItem = contentList[index];
+                              contentList.removeAt(index);
+                              contentList.insert(index - 1, contentItem);
+                            });
+                          }
+                        : null,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_downward),
+                    onPressed: index < contentList.length - 1
+                        ? () {
+                            setState(() {
+                              final contentItem = contentList[index];
+                              contentList.removeAt(index);
+                              contentList.insert(index + 1, contentItem);
+                            });
+                          }
+                        : null,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      setState(() {
+                        contentList.removeAt(index);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Future<void> _selectDateTime() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          selectedDate = pickedDate;
+          selectedTime = pickedTime;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isImageSelected = contentList.any((content) => content is File);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: Colors.black,
         ),
       ),
@@ -114,6 +295,14 @@ class _PostPageState extends State<PostPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  ElevatedButton.icon(
+                    onPressed: _selectDateTime,
+                    icon: Icon(Icons.calendar_today),
+                    label: Text(selectedDate != null && selectedTime != null
+                        ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} ${selectedTime!.hour}:${selectedTime!.minute}'
+                        : 'Sélectionner la date et l\'heure'),
+                  ),
+                  const SizedBox(height: 16.0),
                   TextFormField(
                     controller: titleController,
                     decoration: const InputDecoration(
@@ -131,54 +320,69 @@ class _PostPageState extends State<PostPage> {
                     maxLines: 5,
                   ),
                   const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: isImageSelected
-                        ? null
-                        : () async {
-                            await pickImage();
-                          },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await pickImage();
+                        },
+                        icon: Icon(Icons.image),
+                        label: Text('Image'),
                       ),
-                      primary: Colors.blue,
-                      onPrimary: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.all(16.0),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    child: const Text('Sélectionner une image'),
+                      const SizedBox(width: 16.0),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Ajouter un paragraphe'),
+                                content: TextFormField(
+                                  controller: descriptionController,
+                                  maxLines: 5,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Texte',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      final String paragraph =
+                                          descriptionController.text.trim();
+                                      if (paragraph.isNotEmpty) {
+                                        Navigator.of(context).pop();
+                                        setState(() {
+                                          contentList.add(paragraph);
+                                        });
+                                        descriptionController.clear();
+                                      }
+                                    },
+                                    child: const Text('Ajouter'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        icon: Icon(Icons.format_align_left),
+                        label: Text('Paragraphe'),
+                      ),
+                    ],
                   ),
-                  if (isImageSelected)
+                  const SizedBox(height: 16.0),
+                  if (contentList.isNotEmpty)
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 16.0),
-                        const Text(
-                          'Image sélectionnée :',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Image.file(imageFile!),
-                        ),
-                        const SizedBox(height: 16.0),
-                        Text(
-                          imageName!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        for (var index = 0; index < contentList.length; index++)
+                          _buildContentItem(contentList[index], index),
                       ],
                     ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () async {
-                      await uploadImage();
+                      await uploadImages();
                       await submitPost();
                     },
                     style: ElevatedButton.styleFrom(
@@ -200,17 +404,22 @@ class _PostPageState extends State<PostPage> {
           ],
         ),
       ),
-      bottomNavigationBar: CurvedNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
-        color: Color(0xFFFEB30A),
-        height: 50,
-        animationDuration: Duration(milliseconds: 200),
-        index: _selectedIndex,
-        items: [
-          Icon(Icons.create, size: 30),
-          Icon(Icons.view_list, size: 30),
-        ],
+        selectedItemColor: Color(0xFFFEB30A),
+        unselectedItemColor: Colors.grey,
+        currentIndex: _selectedIndex,
         onTap: _onTabSelected,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.create),
+            label: 'Créer',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.view_list),
+            label: 'Voir',
+          ),
+        ],
       ),
     );
   }
