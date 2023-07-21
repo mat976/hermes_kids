@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
 class ParagraphEditorPage extends StatefulWidget {
+  final String initialContent;
+
+  ParagraphEditorPage({required this.initialContent});
+
   @override
   _ParagraphEditorPageState createState() => _ParagraphEditorPageState();
 }
@@ -9,6 +13,13 @@ class ParagraphEditorPage extends StatefulWidget {
 class _ParagraphEditorPageState extends State<ParagraphEditorPage> {
   String _content = '';
   final HtmlEditorController _controller = HtmlEditorController();
+
+  @override
+  void initState() {
+    super.initState();
+    _content = widget.initialContent;
+    _controller.setText(_content);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,22 +38,11 @@ class _ParagraphEditorPageState extends State<ParagraphEditorPage> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              _controller.getText().then((value) {
-                setState(() {
-                  _content = value;
-                });
-              });
+            onPressed: () async {
+              final editedContent = await _controller.getText();
+              Navigator.pop(context, editedContent);
             },
-            child: Text('Submit'),
-          ),
-          SizedBox(height: 16),
-          Text('Content:'),
-          SizedBox(height: 8),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Text(_content),
-            ),
+            child: Text('Save and Go Back'),
           ),
         ],
       ),
