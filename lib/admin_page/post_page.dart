@@ -27,6 +27,7 @@ class _PostPageState extends State<PostPage> {
   String?
       paragraphContent; // Variable to store the content of the paragraph editor
   PageType _currentPage = PageType.Create;
+  String? imageUrl; // Move imageUrl here
 
   Future<void> pickImage() async {
     final picker.ImagePicker _picker = picker.ImagePicker();
@@ -45,15 +46,22 @@ class _PostPageState extends State<PostPage> {
       return;
     }
 
+    // Reorder the contentList to upload the last selected image first
+    if (contentList.length > 1) {
+      final dynamic lastContent = contentList.removeLast();
+      contentList.insert(0, lastContent);
+    }
+
     for (var content in contentList) {
       if (content is File) {
         final String title = titleController.text.trim();
         final Reference storageRef =
             FirebaseStorage.instance.ref().child('images/$title.jpg');
         final TaskSnapshot uploadTask = await storageRef.putFile(content);
-        final imageUrl = await uploadTask.ref.getDownloadURL();
+        this.imageUrl = await uploadTask.ref
+            .getDownloadURL(); // Mettre à jour directement l'imageUrl dans l'état
         setState(() {
-          contentList[contentList.indexOf(content)] = imageUrl;
+          contentList[contentList.indexOf(content)] = this.imageUrl;
         });
       }
     }
@@ -86,11 +94,16 @@ class _PostPageState extends State<PostPage> {
       postData['paragraph'] = paragraphContent;
     }
 
+    // Remove imageUrl null assignment to retain the value obtained after image upload
+    postData['imageUrl'] = imageUrl;
+
     await postsRef.add(postData);
     titleController.clear();
     descriptionController.clear();
     contentList.clear();
     paragraphContent = null;
+    // Keep imageUrl after post submission
+    // imageUrl = null;
   }
 
   void _onTabSelected(int index) {
@@ -117,6 +130,8 @@ class _PostPageState extends State<PostPage> {
           return Icon(Icons.error);
         },
       );
+    } else if (content is File) {
+      return Image.file(content);
     } else {
       // If the content is not recognized, just display an empty container
       return const SizedBox.shrink();
@@ -137,9 +152,6 @@ class _PostPageState extends State<PostPage> {
       setState(() {
         paragraphContent =
             editedContent; // Update the content of the paragraph editor
-        if (contentList.isNotEmpty) {
-          contentList.removeLast();
-        }
         contentList.add(editedContent); // Update the content list
       });
     }
@@ -184,9 +196,7 @@ class _PostPageState extends State<PostPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () async {
-                            await pickImage();
-                          },
+                          onPressed: isImageSelected ? null : pickImage,
                           icon: Icon(Icons.image),
                           label: Text('Image'),
                         ),

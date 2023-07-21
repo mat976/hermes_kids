@@ -33,6 +33,7 @@ class AccueilPage extends StatelessWidget {
               final String title = post['title'] ?? '';
               final String description = post['description'] ?? '';
               final String imageUrl = post['imageUrl'] ?? '';
+              final String paragraph = post['paragraph']; // Nullable paragraph
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -42,6 +43,7 @@ class AccueilPage extends StatelessWidget {
                         imageUrl: imageUrl,
                         title: title,
                         description: description,
+                        paragraph: paragraph, // Pass the nullable paragraph
                       ),
                     ),
                   );
