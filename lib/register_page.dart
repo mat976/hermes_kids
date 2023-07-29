@@ -7,54 +7,62 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Contrôleurs pour récupérer les saisies de l'utilisateur pour l'e-mail, le mot de passe et la confirmation du mot de passe
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     final TextEditingController confirmPasswordController =
         TextEditingController();
 
+    // Fonction pour gérer le processus d'inscription de l'utilisateur
     Future<void> registerUser(BuildContext context) async {
+      // Extraction du texte saisi dans les champs et suppression des espaces supplémentaires
       String email = emailController.text.trim();
       String password = passwordController.text.trim();
       String confirmPassword = confirmPasswordController.text.trim();
 
+      // Vérification si le mot de passe saisi correspond au mot de passe de confirmation
       if (password != confirmPassword) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Les mots de passe ne correspondent pas')),
+          const SnackBar(
+              content: Text('Les mots de passe ne correspondent pas')),
         );
         return;
       }
 
       try {
+        // Création d'un nouvel utilisateur dans Firebase Authentication en utilisant l'e-mail et le mot de passe
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
 
-        // Créer le document "user" avec l'UID de l'utilisateur
+        // Stockage de données supplémentaires de l'utilisateur dans Firestore sous la collection 'users'
         await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredential.user!.uid)
             .set({
           'email': email,
-          'admin': false, // Par défaut, l'utilisateur n'est pas un admin
+          'admin':
+              false, // Par défaut, l'utilisateur n'est pas un administrateur
         });
 
-        // Afficher un message de réussite d'inscription
+        // Affichage d'un message de succès après une inscription réussie
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Inscription réussie')),
+          const SnackBar(content: Text('Inscription réussie')),
         );
 
-        // Rediriger vers la page de connexion
+        // Redirection de l'utilisateur vers la page de connexion après une inscription réussie
         Navigator.pushReplacementNamed(context, '/login');
       } on FirebaseAuthException catch (e) {
+        // Gestion des erreurs spécifiques liées à Firebase Authentication
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Le mot de passe est trop faible.')),
+            const SnackBar(content: Text('Le mot de passe est trop faible.')),
           );
         } else if (e.code == 'email-already-in-use') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
                 content:
                     Text('Cet e-mail est déjà utilisé par un autre compte.')),
           );
@@ -64,9 +72,9 @@ class RegisterPage extends StatelessWidget {
           );
         }
       } catch (e) {
-        // Une erreur s'est produite lors de l'inscription
+        // Gestion des autres erreurs qui pourraient survenir lors de l'inscription
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur d\'inscription')),
+          const SnackBar(content: Text('Erreur d\'inscription')),
         );
       }
     }
@@ -83,7 +91,7 @@ class RegisterPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 const Text(
-                  'Inscription',
+                  'Inscription', // Titre de la page d'inscription
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -94,7 +102,8 @@ class RegisterPage extends StatelessWidget {
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Adresse e-mail',
+                    labelText:
+                        'Adresse e-mail', // Étiquette de l'entrée pour l'e-mail
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
@@ -104,40 +113,44 @@ class RegisterPage extends StatelessWidget {
                 TextFormField(
                   controller: passwordController,
                   decoration: const InputDecoration(
-                    labelText: 'Mot de passe',
+                    labelText:
+                        'Mot de passe', // Étiquette de l'entrée pour le mot de passe
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
-                  obscureText: true,
+                  obscureText: true, // Masque le texte du mot de passe
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: confirmPasswordController,
                   decoration: const InputDecoration(
-                    labelText: 'Confirmez le mot de passe',
+                    labelText:
+                        'Confirmez le mot de passe', // Étiquette de l'entrée pour la confirmation du mot de passe
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
-                  obscureText: true,
+                  obscureText: true, // Masque le texte du mot de passe
                 ),
                 const SizedBox(height: 16.0),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => registerUser(context),
+                    onPressed: () => registerUser(
+                        context), // Appelle la fonction d'inscription
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24.0,
                         vertical: 12.0,
                       ),
-                      backgroundColor: Colors.orange,
+                      backgroundColor:
+                          Colors.orange, // Couleur de fond du bouton
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       elevation: 2.0,
                     ),
                     child: const Text(
-                      'Inscription',
+                      'Inscription', // Texte du bouton
                       style: TextStyle(fontSize: 18.0, color: Colors.white),
                     ),
                   ),
@@ -145,9 +158,9 @@ class RegisterPage extends StatelessWidget {
                 const SizedBox(height: 8.0),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // Navigue vers la page précédente
                   },
-                  child: const Text("Retour"),
+                  child: const Text("Retour"), // Texte pour le bouton "Retour"
                 ),
               ],
             ),

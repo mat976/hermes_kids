@@ -12,6 +12,7 @@ class EditPostPage extends StatefulWidget {
   final String imageUrl;
 
   const EditPostPage({
+    super.key,
     required this.postId,
     required this.title,
     required this.description,
@@ -41,9 +42,9 @@ class _EditPostPageState extends State<EditPostPage> {
   }
 
   Future<void> pickImage() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {

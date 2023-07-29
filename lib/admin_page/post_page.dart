@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' if (dart.library.html) 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart' as picker;
 import 'package:hermes_kids/admin_page/view_posts_page.dart';
 import 'richtextedit.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:flutter/foundation.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({Key? key}) : super(key: key);
@@ -20,14 +21,13 @@ enum PageType {
 }
 
 class _PostPageState extends State<PostPage> {
-  int _selectedIndex = 0;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   List<dynamic> contentList = [];
   String?
-      paragraphContent; // Variable to store the content of the paragraph editor
+      paragraphContent; // Variable pour stocker le contenu de l'éditeur de paragraphe
   PageType _currentPage = PageType.Create;
-  String? imageUrl; // Move imageUrl here
+  String? imageUrl; // Déplacer imageUrl ici
 
   Future<void> pickImage() async {
     final picker.ImagePicker _picker = picker.ImagePicker();
@@ -36,7 +36,13 @@ class _PostPageState extends State<PostPage> {
 
     if (pickedFile != null) {
       setState(() {
-        contentList.add(File(pickedFile.path));
+        if (kIsWeb) {
+          // Sur le web, convertir le fichier en Uint8List
+          final bytes = File(pickedFile.path).readAsBytesSync();
+          contentList.add(Uint8List.fromList(bytes));
+        } else {
+          contentList.add(File(pickedFile.path));
+        }
       });
     }
   }
@@ -46,7 +52,7 @@ class _PostPageState extends State<PostPage> {
       return;
     }
 
-    // Reorder the contentList to upload the last selected image first
+    // Réorganiser contentList pour télécharger l'image sélectionnée en dernier en premier
     if (contentList.length > 1) {
       final dynamic lastContent = contentList.removeLast();
       contentList.insert(0, lastContent);
@@ -58,8 +64,18 @@ class _PostPageState extends State<PostPage> {
         final Reference storageRef =
             FirebaseStorage.instance.ref().child('images/$title.jpg');
         final TaskSnapshot uploadTask = await storageRef.putFile(content);
-        this.imageUrl = await uploadTask.ref
+        imageUrl = await uploadTask.ref
             .getDownloadURL(); // Mettre à jour directement l'imageUrl dans l'état
+        setState(() {
+          contentList[contentList.indexOf(content)] = this.imageUrl;
+        });
+      } else if (content is Uint8List && kIsWeb) {
+        final String title = titleController.text.trim();
+        final Reference storageRef =
+            FirebaseStorage.instance.ref().child('images/$title.jpg');
+        final UploadTask uploadTask = storageRef.putData(content);
+        final TaskSnapshot snapshot = await uploadTask;
+        imageUrl = await snapshot.ref.getDownloadURL();
         setState(() {
           contentList[contentList.indexOf(content)] = this.imageUrl;
         });
@@ -94,7 +110,7 @@ class _PostPageState extends State<PostPage> {
       postData['paragraph'] = paragraphContent;
     }
 
-    // Remove imageUrl null assignment to retain the value obtained after image upload
+    // Supprimer l'affectation null à imageUrl pour conserver la valeur obtenue après le téléchargement de l'image
     postData['imageUrl'] = imageUrl;
 
     await postsRef.add(postData);
@@ -102,38 +118,30 @@ class _PostPageState extends State<PostPage> {
     descriptionController.clear();
     contentList.clear();
     paragraphContent = null;
-    // Keep imageUrl after post submission
+    // Conserver imageUrl après la soumission de l'article
     // imageUrl = null;
-  }
-
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 
   Widget _buildContentItem(dynamic content, int index) {
     if (content is String && content.startsWith('<')) {
-      // If the content is HTML, display it using flutter_widget_from_html_core
+      // Si le contenu est du HTML, l'afficher à l'aide de flutter_widget_from_html_core
       return HtmlWidget(content);
     } else if (content is String && content.startsWith('http')) {
-      // If the content is an image URL, display it using Image.network
+      // Si le contenu est une URL d'image, l'afficher à l'aide de Image.network
       return Image.network(
         content,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         },
         errorBuilder: (context, error, stackTrace) {
-          return Icon(Icons.error);
+          return const Icon(Icons.error);
         },
       );
-    } else if (content is File) {
-      return Image.file(content);
     } else {
-      // If the content is not recognized, just display an empty container
+      // Si le contenu n'est pas reconnu, afficher simplement un conteneur vide
       return const SizedBox.shrink();
     }
   }
@@ -151,15 +159,16 @@ class _PostPageState extends State<PostPage> {
     if (editedContent != null) {
       setState(() {
         paragraphContent =
-            editedContent; // Update the content of the paragraph editor
-        contentList.add(editedContent); // Update the content list
+            editedContent; // Mettre à jour le contenu de l'éditeur de paragraphe
+        contentList.add(editedContent); // Mettre à jour la liste de contenu
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isImageSelected = contentList.any((content) => content is File);
+    final isImageSelected = contentList.any((content) =>
+        (content is File && !kIsWeb) || (content is Uint8List && kIsWeb));
 
     return Scaffold(
       appBar: AppBar(
@@ -197,13 +206,13 @@ class _PostPageState extends State<PostPage> {
                       children: [
                         ElevatedButton.icon(
                           onPressed: isImageSelected ? null : pickImage,
-                          icon: Icon(Icons.image),
-                          label: Text('Image'),
+                          icon: const Icon(Icons.image),
+                          label: const Text('Image'),
                         ),
                         ElevatedButton.icon(
                           onPressed: _openParagraphEditor,
-                          icon: Icon(Icons.format_align_left),
-                          label: Text('Paragraphe'),
+                          icon: const Icon(Icons.format_align_left),
+                          label: const Text('Paragraphe'),
                         ),
                       ],
                     ),
@@ -227,11 +236,11 @@ class _PostPageState extends State<PostPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        primary: Colors.blue,
-                        onPrimary: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.all(16.0),
                         visualDensity: VisualDensity.compact,
@@ -244,8 +253,8 @@ class _PostPageState extends State<PostPage> {
             : ViewPostsPage(),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        // ... BottomNavigationBar configuration ...
-        items: [
+        // ... Configuration de la barre de navigation inférieure ...
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.create),
             label: 'Créer',

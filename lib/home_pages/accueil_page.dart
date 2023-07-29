@@ -13,16 +13,20 @@ class AccueilPage extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('posts').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          // Vérifie si une erreur s'est produite lors de la récupération des données
           if (snapshot.hasError) {
             return const Center(child: Text('Une erreur s\'est produite'));
           }
 
+          // Vérifie si les données sont en cours de chargement
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // Obtient la liste des documents de la collection "posts" depuis Firestore
           final List<QueryDocumentSnapshot> posts = snapshot.data!.docs;
 
+          // Affiche un carrousel vertical des publications à l'aide du widget CarouselSlider
           return CarouselSlider(
             options: CarouselOptions(
               scrollDirection: Axis.vertical,
@@ -33,9 +37,11 @@ class AccueilPage extends StatelessWidget {
               final String title = post['title'] ?? '';
               final String description = post['description'] ?? '';
               final String imageUrl = post['imageUrl'] ?? '';
-              final String paragraph = post['paragraph']; // Nullable paragraph
+              final String? paragraph =
+                  post['paragraph']; // Paragraphe éventuel (nullable)
               return GestureDetector(
                 onTap: () {
+                  // Navigue vers la page de détails de la publication au clic
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -43,7 +49,7 @@ class AccueilPage extends StatelessWidget {
                         imageUrl: imageUrl,
                         title: title,
                         description: description,
-                        paragraph: paragraph, // Pass the nullable paragraph
+                        paragraph: paragraph, // Passe le paragraphe éventuel
                       ),
                     ),
                   );

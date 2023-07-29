@@ -5,13 +5,14 @@ class PostDetailPage extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String description;
-  final String? paragraph; // Make paragraph nullable
+  final String? paragraph; // Rend le paragraphe nullable (optionnel)
 
   const PostDetailPage({
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.description,
-    this.paragraph, // Make paragraph nullable in the constructor
+    this.paragraph, // Rend le paragraphe nullable dans le constructeur
   });
 
   @override

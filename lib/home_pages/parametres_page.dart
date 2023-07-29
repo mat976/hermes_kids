@@ -180,16 +180,16 @@ class _ParametresPageState extends State<ParametresPage> {
               navigateToCGUPage(context);
             },
             style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              primary: Colors.grey[300],
-              onPrimary: Colors.black,
               elevation: 0,
               padding: const EdgeInsets.all(16.0),
               visualDensity: VisualDensity.compact,
             ),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Icon(Icons.description),

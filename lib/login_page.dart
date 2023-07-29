@@ -7,6 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -21,10 +23,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       await _prefs.setBool('isLoggedIn', true);
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       print('Erreur de connexion : $e');
-      // Afficher un message d'erreur à l'utilisateur
+      // Afficher un message d'erreur à l'utilisateur en cas d'échec de connexion
     }
   }
 
@@ -44,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
       final User? user = userCredential.user;
 
       await _prefs.setBool('isLoggedIn', true);
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, '/home');
 
       // Vérifier si le fichier utilisateur existe déjà dans Firestore
@@ -64,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print('Erreur de connexion avec Google : $e');
-      // Afficher un message d'erreur à l'utilisateur
+      // Afficher un message d'erreur à l'utilisateur en cas d'échec de connexion avec Google
     }
   }
 
@@ -133,8 +137,8 @@ class _LoginPageState extends State<LoginPage> {
                   _loginWithEmail(context, email, password);
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFFFEB30A), // Couleur du bouton
-                  padding: EdgeInsets.symmetric(
+                  backgroundColor: const Color(0xFFFEB30A), // Couleur du bouton
+                  padding: const EdgeInsets.symmetric(
                       vertical: 16.0), // Espacement vertical du bouton
                 ),
                 child: const Text('Login'),

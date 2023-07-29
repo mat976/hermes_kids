@@ -19,6 +19,7 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<void> fetchUserData() async {
+    // Fonction pour récupérer les données de l'utilisateur depuis Firestore
     final User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       final DocumentSnapshot snapshot = await FirebaseFirestore.instance
@@ -29,8 +30,10 @@ class _UserPageState extends State<UserPage> {
         final data = snapshot.data() as Map<String, dynamic>?;
         if (data != null) {
           setState(() {
-            profileImage = data['profileImage'] ?? '';
-            email = data['email'] ?? '';
+            profileImage = data['profileImage'] ??
+                ''; // Récupère le chemin de l'image de profil s'il existe, sinon une chaîne vide
+            email = data['email'] ??
+                ''; // Récupère l'adresse email de l'utilisateur s'il existe, sinon une chaîne vide
           });
         }
       }
@@ -47,7 +50,7 @@ class _UserPageState extends State<UserPage> {
             .topCenter, // Ajuste l'alignement des éléments vers le haut
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
                     'assets/banner_image.jpg'), // Remplacez par le chemin de votre bannière d'arrière-plan
@@ -60,7 +63,7 @@ class _UserPageState extends State<UserPage> {
             child: Padding(
               padding: EdgeInsets.only(left: 16.0, top: paddingTop),
               child: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Navigator.pop(
                       context); // Retour en arrière lorsque le bouton est cliqué
